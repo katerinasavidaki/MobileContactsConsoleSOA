@@ -11,7 +11,8 @@ public class MobileContact extends AbstractEntity {
 
     }
 
-    public MobileContact(String firstname, String lastname, String phoneNumber) {
+    public MobileContact(Long id, String firstname, String lastname, String phoneNumber) {
+        setId(id);
         this.firstname = firstname;
         this.lastname = lastname;
         this.phoneNumber = phoneNumber;
@@ -54,7 +55,7 @@ public class MobileContact extends AbstractEntity {
 
          //In Java 17 το παρακάτω κάνει δυο πράγματα
         // Έλεγχο αν είναι instanceof και αν ναι μετά κάνει
-        // typecast (όπως κάναμε πριν τη Java) 17 με τον παραπάνω κώδικα)
+        // typecast (όπως κάναμε πριν τη Java) 17 με τον παραπάνω κώδικα
         if (!(other instanceof MobileContact that)) return false;
         return Objects.equals(getFirstname(), that.getFirstname())
                 && Objects.equals(getLastname(), that.getLastname())
