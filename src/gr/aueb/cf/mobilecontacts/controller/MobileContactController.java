@@ -1,14 +1,21 @@
 package gr.aueb.cf.mobilecontacts.controller;
 
+import gr.aueb.cf.mobilecontacts.core.serializer.Serializer;
 import gr.aueb.cf.mobilecontacts.dao.IMobileContactDAO;
 import gr.aueb.cf.mobilecontacts.dao.MobileContactDAOImpl;
 import gr.aueb.cf.mobilecontacts.dto.MobileContactInsertDTO;
 import gr.aueb.cf.mobilecontacts.dto.MobileContactReadOnlyDTO;
+import gr.aueb.cf.mobilecontacts.dto.MobileContactUpdateDTO;
+import gr.aueb.cf.mobilecontacts.exceptions.ContactNotFoundException;
 import gr.aueb.cf.mobilecontacts.exceptions.PhoneNumberAlreadyExistsException;
+import gr.aueb.cf.mobilecontacts.mapper.Mapper;
 import gr.aueb.cf.mobilecontacts.model.MobileContact;
 import gr.aueb.cf.mobilecontacts.service.IMobileContactService;
 import gr.aueb.cf.mobilecontacts.service.MobileContactServiceImpl;
 import gr.aueb.cf.mobilecontacts.validation.ValidationUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MobileContactController {
 
@@ -27,20 +34,97 @@ public class MobileContactController {
 
             // If validation is okay, insert contact
             mobileContact = service.insertMobileContact(insertDTO);
-            readOnlyDTO = mapMobileContactToDTO(mobileContact);
-            return "OK\n" + serializeDTO(readOnlyDTO);
+            readOnlyDTO = Mapper.mapMobileContactToDTO(mobileContact);
+            return "OK\n" + Serializer.serializeDTO(readOnlyDTO);
         } catch (PhoneNumberAlreadyExistsException e) {
             return "Error\n" + e.getMessage() + "\n";
         }
     }
 
-    private MobileContactReadOnlyDTO mapMobileContactToDTO(MobileContact mobileContact) {
-        return new MobileContactReadOnlyDTO(mobileContact.getId(), mobileContact.getFirstname(), mobileContact.getLastname(),
-                mobileContact.getPhoneNumber());
+    public String updateContact(MobileContactUpdateDTO updateDTO) {
+        MobileContact mobileContact;
+        MobileContactReadOnlyDTO readOnlyDTO;
+
+        try {
+            // Validate input data (DTO)
+            String errorVector = ValidationUtil.validateDTO(updateDTO);
+            if (!errorVector.isEmpty()) {
+                return "Error.\n" + "Validation error\n" + errorVector;
+            }
+
+            // If validation is okay, insert contact
+            mobileContact = service.updateMobileContact(updateDTO);
+            readOnlyDTO = Mapper.mapMobileContactToDTO(mobileContact);
+            return "OK\n" + Serializer.serializeDTO(readOnlyDTO);
+        } catch (PhoneNumberAlreadyExistsException e) {
+            return "Error\n" + e.getMessage() + "\n";
+        } catch (ContactNotFoundException e) {
+            return "Error.\n" + e.getMessage() + "\n";
+        }
     }
 
-    private String serializeDTO(MobileContactReadOnlyDTO readOnlyDTO) {
-        return "ID: " + readOnlyDTO.getId() + ", Firstname: " + readOnlyDTO.getFirstname() + ", Lastname: " + readOnlyDTO.getLastname()
-                + ", phone number: " + readOnlyDTO.getPhoneNumber();
+    public String deleteContactById(Long id) {
+        try {
+            service.deleteContactById(id);
+            return "OK\n Contact deleted.\n";
+        } catch (ContactNotFoundException e) {
+            return "Error.\n An error occurred during delete. Contact was not found\n";
+        }
+    }
+
+    public String getContactById(Long id) {
+        MobileContact mobileContact;
+        MobileContactReadOnlyDTO readOnlyDTO;
+
+        try {
+            mobileContact = service.getContactById(id);
+            readOnlyDTO = Mapper.mapMobileContactToDTO(mobileContact);
+            return "OK\n" + Serializer.serializeDTO(readOnlyDTO);
+        } catch (ContactNotFoundException e) {
+            return "Error.\n Contact was not found\n";
+        }
+    }
+
+    public List<String> getAllContacts() {
+        List<MobileContact> contacts;
+        List<String> serializedList = new ArrayList<>();
+        MobileContactReadOnlyDTO readOnlyDTO;
+        String serialized;
+
+        contacts = service.getAllContacts();
+
+        for (MobileContact contact : contacts) {
+            readOnlyDTO = Mapper.mapMobileContactToDTO(contact);
+            serialized = Serializer.serializeDTO(readOnlyDTO);
+            serializedList.add(serialized);
+        }
+        return serializedList;
+    }
+
+    public String getContactByPhoneNumber(String phoneNumber) {
+        MobileContact mobileContact;
+        MobileContactReadOnlyDTO readOnlyDTO;
+
+        try {
+            mobileContact = service.getContactByPhoneNumber(phoneNumber);
+            readOnlyDTO = Mapper.mapMobileContactToDTO(mobileContact);
+            return "OK\n" + Serializer.serializeDTO(readOnlyDTO);
+        } catch (ContactNotFoundException e) {
+            return "Error.\n Contact was not found\n";
+        }
+    }
+
+    public String deleteContactByPhoneNumber(String phoneNumber) {
+        MobileContact mobileContact;
+        MobileContactReadOnlyDTO readOnlyDTO;
+        try {
+            mobileContact = service.getContactByPhoneNumber(phoneNumber);
+            readOnlyDTO = Mapper.mapMobileContactToDTO(mobileContact);
+            service.deleteContactByPhoneNumber(phoneNumber);
+
+            return "OK\n Contact deleted.\n" + Serializer.serializeDTO(readOnlyDTO);
+        } catch (ContactNotFoundException e) {
+            return "Error.\n An error occurred during delete. Contact was not found\n";
+        }
     }
 }
