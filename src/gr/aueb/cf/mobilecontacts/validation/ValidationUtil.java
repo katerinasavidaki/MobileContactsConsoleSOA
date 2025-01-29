@@ -27,16 +27,16 @@ public class ValidationUtil {
         return errorResponse;
     }
 
-    public static String validateDTO(MobileContactUpdateDTO updateDTODTO) {
+    public static String validateDTO(MobileContactUpdateDTO updateDTO) {
         String errorResponse = "";
 
-        if (updateDTODTO.getPhoneNumber().length() <= 5) {
+        if (updateDTO.getPhoneNumber().length() <= 5) {
             errorResponse += "Phone number must be greater than 5 symbols\n";
         }
-        if (updateDTODTO.getFirstname().length() < 2) {
+        if (updateDTO.getFirstname().length() < 2) {
             errorResponse += "Firstname must have at least 2 characters.\n";
         }
-        if (updateDTODTO.getLastname().length() < 2) {
+        if (updateDTO.getLastname().length() < 2) {
             errorResponse += "Lastname must have at least 2 characters\n";
         }
         return errorResponse;
