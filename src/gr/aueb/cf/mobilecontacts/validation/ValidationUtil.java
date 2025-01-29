@@ -34,7 +34,7 @@ public class ValidationUtil {
             errorResponse += "Phone number must be greater than 5 symbols\n";
         }
         if (updateDTO.getFirstname().length() < 2) {
-            errorResponse += "Firstname must have at least 2 characters.\n";
+            errorResponse += "Firstname must have at least 2 characters\n";
         }
         if (updateDTO.getLastname().length() < 2) {
             errorResponse += "Lastname must have at least 2 characters\n";
