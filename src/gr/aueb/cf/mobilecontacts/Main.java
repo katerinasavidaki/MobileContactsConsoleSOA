@@ -61,8 +61,6 @@ public class Main {
                     System.out.println(response.substring(7));
                     return;
                 }
-                System.out.println("Unsuccessful insertion");
-                System.out.println(response.substring(6));
                 System.out.println("Please insert the existing id");
                 long oldId = Long.parseLong(getToken());
                 System.out.println("Please insert new firstname, new lastname, new phone number");
@@ -74,27 +72,27 @@ public class Main {
                 System.out.println(response);
                 break;
             case "3":
-                System.out.println("Insert Contact id");
-                long id = Long.parseLong(getToken());
-                response = controller.deleteContactById(id);
+                System.out.println("Insert phone number");
+                phoneNumber = getToken();
+                response = controller.deleteContactByPhoneNumber(phoneNumber);
                 if (response.startsWith("OK")) {
                     System.out.println("Successful deletion");
-                    System.out.println(response.substring(3));
+                    System.out.println(response.substring(22));
                 } else {
                     System.out.println("Unsuccessful deletion");
-                    System.out.println(response.substring(6));
+                    System.out.println(response.substring(7));
                 }
                 break;
             case "4":
-                System.out.println("Insert Contact id");
-                id = Long.parseLong(getToken());
-                response = controller.getContactById(id);
+                System.out.println("Insert phone number");
+                phoneNumber = getToken();
+                response = controller.getContactByPhoneNumber(phoneNumber);
                 if (response.startsWith("OK")) {
                     System.out.println("Successful Search");
                     System.out.println(response.substring(3));
                 } else {
                     System.out.println("Search was unsuccessful");
-                    System.out.println(response.substring(6));
+                    System.out.println(response.substring(7));
                 }
                 break;
             case "5":
